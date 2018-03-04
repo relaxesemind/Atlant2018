@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Start_icon.png</file>
+        <file>Stop_icon.png</file>
+        <file>zoomminus_icon.png</file>
+        <file>zoomplus_icon.png</file>
+        <file>down_icon.png</file>
+        <file>left_icon.png</file>
+        <file>right_icon.png</file>
+        <file>up_icon.png</file>
+    </qresource>
+</RCC>
