@@ -37,8 +37,11 @@ public slots:
     void updateVideoFrame(const QImage&);
 
 private:
+
     pItem framePointer;
     QThreadPool m_pool;
+    std::unique_ptr<PortController> COM1port;
+    CamStreamTask* camPtr;
 };
 
 #endif // CORE_H

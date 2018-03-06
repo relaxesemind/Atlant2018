@@ -1,18 +1,19 @@
 #include "core.h"
 
-std::unique_ptr<PortController> static COM1port;
-
-std::unique_ptr<CamStreamTask> static camPtr;
-
 bool static portisWorking = false;
 
 Core::Core(QObject *parent) : QObject(parent)
 {
-    qDebug() << scene.width() << scene.height();
+  //  qDebug() << scene.width() << scene.height();
 }
 
 Core::~Core()
 {
+
+    if (camPtr)
+    {
+         camPtr->onStop();
+    }
     m_pool.waitForDone();
 }
 
@@ -69,18 +70,14 @@ QString Core::checkPortStatus()
 
 void Core::makeCameraCapture()
 {
-    if (!camPtr)
-    {
-         camPtr = std::make_unique<CamStreamTask> ();
-         m_pool.start(camPtr.get());
-         connect(camPtr.get(),&CamStreamTask::frameAvailable,this,&Core::updateVideoFrame);
-    }
+    camPtr = new CamStreamTask;
+    m_pool.start(camPtr);
+    connect(camPtr,&CamStreamTask::frameAvailable,this,&Core::updateVideoFrame);
 }
 
 void Core::stopCameraCapture()
 {
     camPtr->onStop();
-    framePointer = nullptr;
 }
 
 void Core::updateVideoFrame(const QImage &frame_img)

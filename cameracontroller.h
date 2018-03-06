@@ -4,7 +4,6 @@
 #include <QObject>
 
 #include <memory>
-#include <QThread>
 #include <QThreadPool>
 #include <QRunnable>
 #include <QImage>
