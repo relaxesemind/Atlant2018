@@ -48,7 +48,6 @@ public:
     void setPortSettings(str _name = str("COM1"), int _baudrate = 115200,
                          int _DataBits = 8, int _Parity = 0, int _StopBits = 1, int _FlowControl = 0);
 
-
 signals:
     void finished_Port(); //Сигнал закрытия класса
     void error_(const str& err);//Сигнал ошибок порта
@@ -76,6 +75,8 @@ public:
 
 public slots:
     bool isConnected();
+    bool isWritable();
+    bool isReadable();
     str FromComputer();
     str FromJoystick();
     str MoveXBy(int steps);

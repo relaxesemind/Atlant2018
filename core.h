@@ -2,7 +2,7 @@
 
 #define CORE_H
 
-#include "controller.h"
+#include "portcontroller.h"
 #include "cameracontroller.h"
 
 #include <QObject>
@@ -12,8 +12,25 @@
 #include <QString>
 #include <QGraphicsView>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsSceneWheelEvent>
 #include <QPixmap>
 #include <QImage>
+#include <QDate>
+#include <QTime>
+#include <QFileDialog>
+
+bool extern portisWorking;
+
+
+class VScene : public QGraphicsScene
+{
+    Q_OBJECT
+signals:
+    void zoomIn();
+    void zoomOut();
+protected:
+    void wheelEvent(QGraphicsSceneWheelEvent*) override;
+};
 
 class Core : public QObject
 {
@@ -24,7 +41,7 @@ public:
     explicit Core(QObject *parent = nullptr);
     ~Core();
 
-     QGraphicsScene scene;
+     VScene scene;
 signals:
 
 public slots:
@@ -34,6 +51,7 @@ public slots:
     QString checkPortStatus();
     void makeCameraCapture();
     void stopCameraCapture();
+    bool printScreen();
     void updateVideoFrame(const QImage&);
 
 private:
@@ -42,6 +60,8 @@ private:
     QThreadPool m_pool;
     std::unique_ptr<PortController> COM1port;
     CamStreamTask* camPtr;
+    std::unique_ptr<QImage> lastFrame;
 };
+
 
 #endif // CORE_H

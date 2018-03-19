@@ -22,10 +22,10 @@ public:
     ~MainWindow();
 
 private slots:
+
     void on_Button_RightCamera_clicked();
 
     void on_action_triggered();
-
 
     void on_action_2_triggered();
 
@@ -38,6 +38,8 @@ private slots:
     void on_actionZoomIn_triggered();
 
     void on_actionZoomOut_triggered();
+
+    void on_action_save_triggered();
 
 private:
     Ui::MainWindow *ui;

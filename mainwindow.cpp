@@ -10,6 +10,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->graphicsView->setScene(&core.scene);
+    connect(&core.scene,&VScene::zoomIn,
+            this,&MainWindow::on_actionZoomIn_triggered);
+
+    connect(&core.scene,&VScene::zoomOut,
+            this,&MainWindow::on_actionZoomOut_triggered);
 }
 
 MainWindow::~MainWindow()
@@ -64,4 +69,9 @@ void MainWindow::on_actionZoomIn_triggered()
 void MainWindow::on_actionZoomOut_triggered()
 {
     ui->graphicsView->scale(1/zoomMultiple,1/zoomMultiple);
+}
+
+void MainWindow::on_action_save_triggered()
+{
+    msgToLog(QString("image save status = ") + QString(core.printScreen()));
 }

@@ -1,10 +1,10 @@
 #include "core.h"
 
-bool static portisWorking = false;
+bool portisWorking = false;
 
 Core::Core(QObject *parent) : QObject(parent)
 {
-  //  qDebug() << scene.width() << scene.height();
+
 }
 
 Core::~Core()
@@ -15,6 +15,7 @@ Core::~Core()
          camPtr->onStop();
     }
     m_pool.waitForDone();
+
 }
 
 void Core::makeConnetionWithPort()
@@ -58,21 +59,31 @@ QString Core::checkPortStatus()
 {
     if (COM1port == nullptr)
     {
-        return QString("port is closed!");
+        return QString("port is null!");
     }
+    QString status;
     if (COM1port->isConnected())
     {
-        return QString("port is open and it can write and read data!");
+        status = "port is connected!";
     }else{
-        return QString("port is open but it can't write and read data!");
+        status = "port is disconnected!";
     }
+
+    if (COM1port->isWritable())
+        status += " isWritable";
+    else status += " is not Writable";
+    if (COM1port->isReadable())
+        status += " isReadable";
+    else status += " is not Readable";
+    return status;
 }
 
 void Core::makeCameraCapture()
 {
     camPtr = new CamStreamTask;
     m_pool.start(camPtr);
-    connect(camPtr,&CamStreamTask::frameAvailable,this,&Core::updateVideoFrame);
+    connect(camPtr,&CamStreamTask::frameAvailable,
+            this,  &Core::updateVideoFrame);
 }
 
 void Core::stopCameraCapture()
@@ -80,17 +91,26 @@ void Core::stopCameraCapture()
     camPtr->onStop();
 }
 
-void Core::updateVideoFrame(const QImage &frame_img)
+bool Core::printScreen()
 {
+  const QString Data_dir = QString("DATA/DATA ")
+            + QDate::currentDate().toString(QString("dd_MM_yyyy")) + QString(" ")
+                + QTime::currentTime().toString(QString("hh_mm_ss"));
+
+  QString path = QFileDialog::getSaveFileName
+                    (nullptr,"SAVE IMAGE",Data_dir,"*.png");
+  return lastFrame->save(path,"PNG");
+}
+
+void Core::updateVideoFrame(const QImage& frame_img)
+{
+   lastFrame = std::make_unique<QImage> (frame_img);
    framePointer = std::make_unique<Core::PXitem>
            (QPixmap::fromImage(frame_img));
-
    scene.addItem(framePointer.get());
 }
 
+void VScene::wheelEvent(QGraphicsSceneWheelEvent * e)
+{
 
-
-
-
-
-
+}

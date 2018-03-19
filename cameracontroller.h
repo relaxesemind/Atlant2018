@@ -2,8 +2,6 @@
 #define CAMERACONTROLLER_H
 
 #include <QObject>
-
-#include <memory>
 #include <QThreadPool>
 #include <QRunnable>
 #include <QImage>

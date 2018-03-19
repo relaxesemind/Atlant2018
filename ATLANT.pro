@@ -43,15 +43,15 @@ LIBS += -lopencv_core341 -lopencv_imgproc341 -lopencv_highgui341 \
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    controller.cpp \
     cameracontroller.cpp \
-    core.cpp
+    core.cpp \
+    portcontroller.cpp
 
 HEADERS += \
         mainwindow.h \
-    controller.h \
     cameracontroller.h \
-    core.h
+    core.h \
+    portcontroller.h
 
 FORMS += \
         mainwindow.ui

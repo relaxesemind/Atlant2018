@@ -1,14 +1,18 @@
-#include "controller.h"
+#include "portcontroller.h"
 
 #include <QDebug>
 
 int const delayMIN_for_answer = 150;
 int const delayMAX_for_answer = 3000;
+int const bytesDelay = 4000;
 str const OK = str("OK");
+
 
 
 COMWrapper_QSP::COMWrapper_QSP(QObject *parent)
 {
+    Q_UNUSED(parent);
+
     m_timer.setSingleShot(true);
 }
 
@@ -66,10 +70,12 @@ void COMWrapper_QSP::process_Port()
 
 void COMWrapper_QSP::WriteToPort(const byteArr &data)
 {
-    if (port.isOpen())
+    if (port.isOpen() and port.isWritable())
     {
         m_writeData = data;
         qint64 const bytesWritten = port.write(data);
+        port.waitForBytesWritten(bytesDelay);
+
         if (bytesWritten == -1)
         {
             str err = QObject::tr("Failed to write the data to port %1, error: %2")
@@ -84,7 +90,6 @@ void COMWrapper_QSP::WriteToPort(const byteArr &data)
             emit error_(err);
         }
     }
-    m_timer.start(150);
 }
 
 void COMWrapper_QSP::WriteToPort(const str& str)
@@ -95,6 +100,7 @@ void COMWrapper_QSP::WriteToPort(const str& str)
 
 void COMWrapper_QSP::handleError(QSerialPort::SerialPortError error)
 {
+    Q_UNUSED(error);
        emit error_(port.errorString().toLocal8Bit());
        DisconnectPort();
 }
@@ -118,7 +124,17 @@ PortController::PortController() : COMWrapper_QSP()
 
 bool PortController::isConnected()
 {
-   return port.isOpen() and port.isWritable() and port.isReadable();
+    return port.isOpen();
+}
+
+bool PortController::isWritable()
+{
+    return port.isWritable();
+}
+
+bool PortController::isReadable()
+{
+    return port.isReadable();
 }
 
 str PortController::FromComputer()
@@ -197,13 +213,13 @@ bool PortController::waitForAnswer(const str& ans)
 {
     if (!port.isReadable())
         return false;
+
     int n = 0;
 
     while ( !last_received_message.contains(ans,Qt::CaseInsensitive) and
-           delayMIN_for_answer * n <= delayMAX_for_answer )
+           delayMIN_for_answer * (++n) <= delayMAX_for_answer )
     {
         QThread::currentThread()->msleep(delayMIN_for_answer);
-        ++n;
     }
     return last_received_message == ans;
 }

@@ -8,5 +8,6 @@
         <file>left_icon.png</file>
         <file>right_icon.png</file>
         <file>up_icon.png</file>
+        <file>screenshot.png</file>
     </qresource>
 </RCC>

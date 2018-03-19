@@ -33,7 +33,6 @@ void CamStreamTask::run()
             m_stopped = true;
             continue;
         }
-
         cv::Mat frameRGB;
 
         cv::cvtColor( frame, frameRGB, CV_BGR2RGB );
@@ -42,7 +41,7 @@ void CamStreamTask::run()
             reinterpret_cast<const uchar*> (frameRGB.data),
             frameRGB.cols,
             frameRGB.rows,
-            frameRGB.step,
+            int(frameRGB.step),
             QImage::Format_RGB888
         );
         emit frameAvailable(img.copy());
