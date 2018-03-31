@@ -41,6 +41,10 @@ private slots:
 
     void on_action_save_triggered();
 
+    void on_Button_LeftCamera_clicked();
+
+    void on_Button_UpCamera_clicked();
+
 private:
     Ui::MainWindow *ui;
     Core core;

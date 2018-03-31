@@ -7,39 +7,23 @@ int const delayMAX_for_answer = 3000;
 int const bytesDelay = 4000;
 str const OK = str("OK");
 
-
-
 COMWrapper_QSP::COMWrapper_QSP(QObject *parent)
 {
     Q_UNUSED(parent);
-
-    m_timer.setSingleShot(true);
+    port.setPortName("COM1");
+    port.setBaudRate(QSerialPort::Baud115200);
+    port.setParity(QSerialPort::NoParity);
+    port.setDataBits(QSerialPort::Data8);
+    port.setStopBits(QSerialPort::OneStop);
 }
 
 COMWrapper_QSP::~COMWrapper_QSP()
 {
     qDebug() << "port was closed";
-    DisconnectPort();
+    disconnectPort();
 }
 
-void COMWrapper_QSP::setPortSettings(str _name, int _baudrate, int _DataBits, int _Parity, int _StopBits, int _FlowControl)
-{
-    settings.name = _name;
-    settings.baudRate = _baudrate;
-    settings.dataBits = static_cast<QSerialPort::DataBits> (_DataBits);
-    settings.parity = static_cast<QSerialPort::Parity> (_Parity);
-    settings.stopBits = static_cast<QSerialPort::StopBits> (_StopBits);
-    settings.flowControl = static_cast<QSerialPort::FlowControl> (_FlowControl);
-
-    port.setPortName(settings.name);
-    port.setBaudRate(settings.baudRate);
-    port.setDataBits(settings.dataBits);
-    port.setParity(settings.parity);
-    port.setStopBits(settings.stopBits);
-    port.setFlowControl(settings.flowControl);
-}
-
-void COMWrapper_QSP::DisconnectPort()
+void COMWrapper_QSP::disconnectPort()
 {
     if (port.isOpen())
     {
@@ -48,32 +32,31 @@ void COMWrapper_QSP::DisconnectPort()
     }
 }
 
-void COMWrapper_QSP::ConnectPort()
+void COMWrapper_QSP::connectPort()
 {
-    if (!port.isReadable() or !port.isWritable())
-        return;
-
-    if (port.open(QIODevice::ReadWrite))
+    if (!port.isOpen())
     {
-
-    }else{
-
+        port.open(QIODevice::ReadWrite);
+        qDebug() << "port was open!";
     }
 }
 
 void COMWrapper_QSP::process_Port()
 {
     qDebug() << "port is created";
-    connect(&port,&QSerialPort::errorOccurred,this,&COMWrapper_QSP::handleError);
-    connect(&port,&QSerialPort::readyRead,this,&COMWrapper_QSP::ReadInPort);
+    connect(&port,&QSerialPort::errorOccurred,
+            this,&COMWrapper_QSP::handleError);
+
+    connect(&port,&QSerialPort::readyRead,
+            this,&COMWrapper_QSP::readInPort);
 }
 
-void COMWrapper_QSP::WriteToPort(const byteArr &data)
+void COMWrapper_QSP::writeToPort(const QString& data)
 {
     if (port.isOpen() and port.isWritable())
     {
-        m_writeData = data;
-        qint64 const bytesWritten = port.write(data);
+        std::string data_s = data.toStdString();
+        qint64 const bytesWritten = port.write(data_s.c_str());
         port.waitForBytesWritten(bytesDelay);
 
         if (bytesWritten == -1)
@@ -82,7 +65,7 @@ void COMWrapper_QSP::WriteToPort(const byteArr &data)
                                      .arg(port.portName())
                                      .arg(port.errorString());
             emit error_(err);
-        }else if (bytesWritten != m_writeData.size())
+        }else if (bytesWritten != data.toLocal8Bit().size())
         {
             str err = QObject::tr("Failed to write all the data to port %1, error: %2")
                                      .arg(port.portName())
@@ -92,20 +75,14 @@ void COMWrapper_QSP::WriteToPort(const byteArr &data)
     }
 }
 
-void COMWrapper_QSP::WriteToPort(const str& str)
-{
-    byteArr bytearr(str.toLocal8Bit());
-    WriteToPort(bytearr);
-}
-
 void COMWrapper_QSP::handleError(QSerialPort::SerialPortError error)
 {
     Q_UNUSED(error);
        emit error_(port.errorString().toLocal8Bit());
-       DisconnectPort();
+       disconnectPort();
 }
 
-void COMWrapper_QSP::ReadInPort()
+void COMWrapper_QSP::readInPort()
 {
     str data (port.readAll());
     if (!data.isEmpty())
@@ -118,8 +95,7 @@ void COMWrapper_QSP::ReadInPort()
 
 PortController::PortController() : COMWrapper_QSP()
 {
-    setPortSettings(); //default settings
-
+    connectPort();
 }
 
 bool PortController::isConnected()
@@ -137,20 +113,20 @@ bool PortController::isReadable()
     return port.isReadable();
 }
 
-str PortController::FromComputer()
+str PortController::fromComputer()
 {
     sendCommandToPort(str("MTZ\r"));
 
     return str("Command FromComputer was " + answerStatus(OK));
 }
 
-str PortController::FromJoystick()
+str PortController::fromJoystick()
 {
     sendCommandToPort("MTH\r");
     return str("Command FromJoystick was " + answerStatus(OK));
 }
 
-str PortController::MoveXBy(int steps)
+str PortController::moveXBy(int steps)
 {
 //    std::stringstream ss;
 //    ss<<"MTX="<<steps<<"\r";
@@ -163,7 +139,7 @@ str PortController::MoveXBy(int steps)
     return str("Command MoveXBy " + str::number(steps) + " steps was " + answerStatus(str("X_DONE")));
 }
 
-str PortController::MoveYBy(int steps)
+str PortController::moveYBy(int steps)
 {
 //    std::stringstream ss;
 //    ss<<"MTY="<<steps<<"\r";
@@ -176,7 +152,7 @@ str PortController::MoveYBy(int steps)
     return str("Command MoveYBy " + str::number(steps) + " steps was " + answerStatus(str("Y_DONE")));
 }
 
-str PortController::MoveZBy(int steps)
+str PortController::moveZBy(int steps)
 {
 
     sendCommandToPort(str("MTV=" + str::number(steps) + "\r"));
@@ -184,25 +160,25 @@ str PortController::MoveZBy(int steps)
     return str("Command MoveZBy " + str::number(steps) + " steps was " + answerStatus(str("Z_DONE")));
 }
 
-str PortController::MoveFrameLeft()
+str PortController::moveFrameLeft()
 {
     sendCommandToPort(str("MTFL\r"));
     return str("Command MoveFrameLeft was " + answerStatus("X_DONE"));
 }
 
-str PortController::MoveFrameRight()
+str PortController::moveFrameRight()
 {
     sendCommandToPort(str("MTFR\r"));
     return str("Command MoveFrameRight was " + answerStatus("X_DONE"));
 }
 
-str PortController::MoveFrameUp()
+str PortController::moveFrameUp()
 {
     sendCommandToPort(str("MTFU\r"));
     return str("Command MoveFrameRight was " + answerStatus("Y_DONE"));
 }
 
-str PortController::MoveFrameDown()
+str PortController::moveFrameDown()
 {
     sendCommandToPort(str("MTFD\r"));
     return str("Command MoveFrameRight was " + answerStatus("Y_DONE"));
@@ -210,17 +186,15 @@ str PortController::MoveFrameDown()
 
 
 bool PortController::waitForAnswer(const str& ans)
-{
+{// wait outport signal or timeout
     if (!port.isReadable())
         return false;
 
-    int n = 0;
+    QEventLoop loop;
+    connect(this,&PortController::outPort,&loop,&QEventLoop::quit);
+    QTimer::singleShot(delayMAX_for_answer,&loop,&QEventLoop::quit);
+    loop.exec();
 
-    while ( !last_received_message.contains(ans,Qt::CaseInsensitive) and
-           delayMIN_for_answer * (++n) <= delayMAX_for_answer )
-    {
-        QThread::currentThread()->msleep(delayMIN_for_answer);
-    }
     return last_received_message == ans;
 }
 
@@ -229,7 +203,7 @@ void PortController::sendCommandToPort(const str& command)
     if (!port.isWritable())
         return;
 
-    WriteToPort(command);
+    writeToPort(command);
 }
 
 str PortController::answerStatus(const str& ans)

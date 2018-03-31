@@ -47,7 +47,10 @@ signals:
 public slots:
     void makeConnetionWithPort();
     void disconnectPort();
-    QString moveToRight(int steps = 2);
+    QString moveToRight(int steps);
+    QString moveToLeft(int steps);
+    QString moveToUp(int steps);
+    QString moveToDown(int steps);
     QString checkPortStatus();
     void makeCameraCapture();
     void stopCameraCapture();

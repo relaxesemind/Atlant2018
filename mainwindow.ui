@@ -32,13 +32,6 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="1">
-       <widget class="QGraphicsView" name="graphicsView">
-        <property name="styleSheet">
-         <string notr="true">background : rgb(38, 38, 38)</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QTabWidget" name="tabWidget">
         <property name="sizePolicy">
@@ -73,32 +66,15 @@
           <property name="geometry">
            <rect>
             <x>40</x>
-            <y>20</y>
-            <width>201</width>
-            <height>148</height>
+            <y>23</y>
+            <width>221</width>
+            <height>171</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
            <property name="sizeConstraint">
-            <enum>QLayout::SetNoConstraint</enum>
+            <enum>QLayout::SetDefaultConstraint</enum>
            </property>
-           <item row="1" column="0">
-            <widget class="QCommandLinkButton" name="Button_LeftCamera">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="resource/res.qrc">
-               <normaloff>:/left_icon.png</normaloff>:/left_icon.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="2">
             <widget class="QCommandLinkButton" name="Button_RightCamera">
              <property name="sizePolicy">
@@ -113,6 +89,23 @@
              <property name="icon">
               <iconset resource="resource/res.qrc">
                <normaloff>:/right_icon.png</normaloff>:/right_icon.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QCommandLinkButton" name="Button_LeftCamera">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="resource/res.qrc">
+               <normaloff>:/left_icon.png</normaloff>:/left_icon.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -162,7 +155,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>340</y>
+            <y>440</y>
             <width>281</width>
             <height>21</height>
            </rect>
@@ -175,7 +168,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>200</y>
+            <y>310</y>
             <width>281</width>
             <height>131</height>
            </rect>
@@ -217,9 +210,52 @@
            </item>
           </layout>
          </widget>
+         <widget class="QSpinBox" name="spinBox">
+          <property name="geometry">
+           <rect>
+            <x>190</x>
+            <y>220</y>
+            <width>61</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="suffix">
+           <string/>
+          </property>
+          <property name="prefix">
+           <string/>
+          </property>
+          <property name="minimum">
+           <number>2</number>
+          </property>
+          <property name="maximum">
+           <number>26</number>
+          </property>
+          <property name="singleStep">
+           <number>2</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_5">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>220</y>
+            <width>161</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Чисто шагов за одно нажатие</string>
+          </property>
+         </widget>
          <zorder>line</zorder>
          <zorder>layoutWidget</zorder>
          <zorder>layoutWidget</zorder>
+         <zorder>spinBox</zorder>
+         <zorder>label_5</zorder>
         </widget>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -293,12 +329,12 @@
            </property>
           </widget>
          </widget>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <property name="geometry">
            <rect>
             <x>20</x>
             <y>30</y>
-            <width>71</width>
+            <width>204</width>
             <height>148</height>
            </rect>
           </property>
@@ -362,6 +398,13 @@ font: 10pt &quot;Consolas&quot;;</string>
           </property>
          </widget>
         </widget>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QGraphicsView" name="graphicsView">
+        <property name="styleSheet">
+         <string notr="true">background : rgb(38, 38, 38)</string>
+        </property>
        </widget>
       </item>
      </layout>

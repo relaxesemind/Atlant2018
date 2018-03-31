@@ -44,15 +44,40 @@ void Core::disconnectPort()
 
 QString Core::moveToRight(int steps)
 {
-    QString result;
-    if (COM1port)
+    if (COM1port and COM1port->isWritable())
     {
-         result = COM1port->MoveXBy(steps);
+         return COM1port->moveXBy(steps);
     }else
     {
-         result = QString("port error");
+         return QString("port error");
     }
-    return result;
+}
+
+QString Core::moveToLeft(int steps)
+{
+    if (COM1port and COM1port->isWritable())
+    {
+         return COM1port->moveXBy(steps);
+    }else
+    {
+         return QString("port error");
+    }
+}
+
+QString Core::moveToUp(int steps)
+{
+    if (COM1port and COM1port->isWritable())
+    {
+         return COM1port->moveYBy(steps);
+    }else
+    {
+         return QString("port error");
+    }
+}
+
+QString Core::moveToDown(int steps)
+{
+
 }
 
 QString Core::checkPortStatus()
@@ -75,6 +100,8 @@ QString Core::checkPortStatus()
     if (COM1port->isReadable())
         status += " isReadable";
     else status += " is not Readable";
+
+    qDebug() << COM1port.get();
     return status;
 }
 

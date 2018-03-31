@@ -2,7 +2,8 @@
 #include "ui_mainwindow.h"
 
 quint32 static logStrPos = 0;
-const qreal zoomMultiple = 1.05;
+constexpr qreal zoomMultiple_inc = 1.05;
+constexpr qreal zoomMultple_dec = 1/zoomMultiple_inc;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,7 +25,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_Button_RightCamera_clicked()
 {
-    msgToLog(core.moveToRight());
+    int steps = ui->spinBox->value();
+    msgToLog(core.moveToRight(steps));
 }
 
 void MainWindow::on_action_triggered()//connection port
@@ -63,15 +65,27 @@ void MainWindow::on_actionStopCamera_triggered()
 
 void MainWindow::on_actionZoomIn_triggered()
 {
-    ui->graphicsView->scale(zoomMultiple,zoomMultiple);
+    ui->graphicsView->scale(zoomMultiple_inc,zoomMultiple_inc);
 }
 
 void MainWindow::on_actionZoomOut_triggered()
 {
-    ui->graphicsView->scale(1/zoomMultiple,1/zoomMultiple);
+    ui->graphicsView->scale(zoomMultple_dec,zoomMultple_dec);
 }
 
 void MainWindow::on_action_save_triggered()
 {
     msgToLog(QString("image save status = ") + QString(core.printScreen()));
+}
+
+void MainWindow::on_Button_LeftCamera_clicked()
+{
+    int steps = ui->spinBox->value();
+    msgToLog(core.moveToLeft(steps));
+}
+
+void MainWindow::on_Button_UpCamera_clicked()
+{
+    int steps = ui->spinBox->value();
+    msgToLog(core.moveToUp(steps));
 }
