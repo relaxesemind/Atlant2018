@@ -44,6 +44,8 @@ public:
      VScene scene;
 signals:
 
+    void feedBackFromPort(const QString& message);
+
 public slots:
     void makeConnetionWithPort();
     void disconnectPort();

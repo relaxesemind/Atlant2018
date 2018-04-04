@@ -45,6 +45,8 @@ private slots:
 
     void on_Button_UpCamera_clicked();
 
+    void printPortFeedBack(const QString& message);
+
 private:
     Ui::MainWindow *ui;
     Core core;

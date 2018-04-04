@@ -32,6 +32,7 @@ void MainWindow::on_Button_RightCamera_clicked()
 void MainWindow::on_action_triggered()//connection port
 {
    core.makeConnetionWithPort();
+   connect(&core,&Core::feedBackFromPort,this,&MainWindow::printPortFeedBack);
    msgToLog(QString("Port was connected!"));
 }
 
@@ -88,4 +89,9 @@ void MainWindow::on_Button_UpCamera_clicked()
 {
     int steps = ui->spinBox->value();
     msgToLog(core.moveToUp(steps));
+}
+
+void MainWindow::printPortFeedBack(const QString &message)
+{
+    msgToLog(message);
 }

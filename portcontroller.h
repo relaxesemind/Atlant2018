@@ -12,6 +12,8 @@
 #include <QtConcurrent/QtConcurrent>
 #include <QFuture>
 #include <QEventLoop>
+#include <tuple>
+#include <QStringList>
 
 
 using str = QString;
@@ -66,18 +68,30 @@ public slots:
     str moveXBy(int steps);
     str moveYBy(int steps);
     str moveZBy(int steps);
-  //  str GetCoords(int* x, int* y, int* z);
+    std::tuple<int,int,int> getCoordinates();
     str moveFrameLeft();
     str moveFrameRight();
     str moveFrameUp();
     str moveFrameDown();
+    str setSlowSpeed(int speed);
+    str setFastSpeed(int speed);
+    str setZSpeed(int speed);
+    str setBackX(int value);
+    str setBackY(int value);
+    str moveLeftStart(int speed);
+    str moveRightStart(int speed);
+    str moveXStop();
+    str moveUpStart(int speed);
+    str moveDownStart(int speed);
+    str moveYStop();
+    str setFrameSizeX(int value);
+    str setFrameSizeY(int value);
 
 
 private:
     bool waitForAnswer(const str&);
     void sendCommandToPort(const str&);
     str  answerStatus(const str&);
-
 };
 
 

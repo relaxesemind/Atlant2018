@@ -31,6 +31,8 @@ void Core::makeConnetionWithPort()
     connect(thread,&QThread::started,COM1port.get(),&PortController::process_Port,Qt::DirectConnection);
     connect(COM1port.get(),&PortController::finished_Port,thread,&QThread::quit,Qt::DirectConnection);
     connect(thread,&QThread::finished,thread,&QThread::deleteLater,Qt::DirectConnection);
+    connect(COM1port.get(),&PortController::outPort,this,&Core::feedBackFromPort,Qt::DirectConnection);
+    //
     thread->start();
 }
 
@@ -57,7 +59,7 @@ QString Core::moveToLeft(int steps)
 {
     if (COM1port and COM1port->isWritable())
     {
-         return COM1port->moveXBy(steps);
+         return COM1port->moveXBy(-steps);
     }else
     {
          return QString("port error");

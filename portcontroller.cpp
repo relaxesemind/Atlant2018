@@ -117,7 +117,7 @@ str PortController::fromComputer()
 {
     sendCommandToPort(str("MTZ\r"));
 
-    return str("Command FromComputer was " + answerStatus(OK));
+    return str(answerStatus(OK));
 }
 
 str PortController::fromJoystick()
@@ -160,6 +160,42 @@ str PortController::moveZBy(int steps)
     return str("Command MoveZBy " + str::number(steps) + " steps was " + answerStatus(str("Z_DONE")));
 }
 
+std::tuple<int, int, int> PortController::getCoordinates()
+{
+    //WriteCmd("MTGP\r");
+    sendCommandToPort(str("MTGP\r"));
+//    string S=WaitFor("_Y=");
+
+//    int p1=S.find("_X=")+3;//search(S.begin(),S.end(),_x.begin(),_x.end())-S.begin()+sizeof(_x);// S.AnsiPos("_X=")+3;
+//    int p2=S.find("_Y=")+3;//search(S.begin(),S.end(),_y.begin(),_y.end())-S.begin()+sizeof(_y);// S.AnsiPos("_Y=")+3;
+//    int p3=S.find("_Z=")+3;//search(S.begin(),S.end(),_z.begin(),_z.end())-S.begin()+sizeof(_z);// S.AnsiPos("_Z=")+3;
+//    string XS=S.substr(p1,p2-p1-5);
+//    string YS;
+//    string ZS;
+//    if(p3>3)
+//    {
+//        YS=S.substr(p2,p3-p2-5);
+//        ZS=S.substr(p3,S.length()-p3-1);
+//    } else
+//    {
+//        YS=S.substr(p2,S.length()-p2-1);
+//    }
+//    if(x) *x=fromStr<int>(XS);//XS.ToInt();
+//    if(y) *y=fromStr<int>(YS);//YS.ToInt();
+//    if(p3>3)
+//        if(z) *z=fromStr<int>(ZS); //ZS.ToInt();
+//    return S;
+//    //
+//    waitForAnswer(str("_Y"));
+    str answer = last_received_message;
+    QStringList parse = answer.split("=");
+    if (parse.size() == 3)
+        return std::make_tuple(parse.at(0).toInt(),
+                               parse.at(1).toInt(),
+                               parse.at(2).toInt());
+    else return std::make_tuple(1u-2,1u-2,1u-2);
+}
+
 str PortController::moveFrameLeft()
 {
     sendCommandToPort(str("MTFL\r"));
@@ -182,6 +218,103 @@ str PortController::moveFrameDown()
 {
     sendCommandToPort(str("MTFD\r"));
     return str("Command MoveFrameRight was " + answerStatus("Y_DONE"));
+}
+
+str PortController::setSlowSpeed(int speed)
+{
+    sendCommandToPort(str("MTSII=") + str::number(speed) + str("\r"));
+        //WriteCmd(string("MTSSI=")+IntToStr(speed)+"\r");
+   return str("Command MoveFrameRight was " + answerStatus("SSI OK"));
+}
+
+str PortController::setFastSpeed(int speed)
+{
+   sendCommandToPort(str("MTSFI=") + str::number(speed) + str("\r"));
+
+   return str("Command MoveFrameRight was " + answerStatus("SFI OK"));
+}
+
+str PortController::setZSpeed(int speed)
+{
+
+    sendCommandToPort(str("MTSFIZ=") + str::number(speed) + str("\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("SFIzOK"));
+}
+
+str PortController::setBackX(int value)
+{
+    sendCommandToPort(str("MTSBX=") + str::number(value) + str("\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("SBX OK"));
+}
+
+str PortController::setBackY(int value)
+{
+    sendCommandToPort(str("MTSBY=") + str::number(value) + str("\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("SBY OK"));
+}
+
+str PortController::moveLeftStart(int speed)
+{
+    setSlowSpeed(speed);
+
+    sendCommandToPort(str("MTL\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("LEFT"));
+}
+
+str PortController::moveRightStart(int speed)
+{
+    setSlowSpeed(speed);
+    sendCommandToPort(str("MTR\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("RIGHT"));
+}
+
+str PortController::moveXStop()
+{
+    sendCommandToPort(str("MTSX\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("STOP_X"));
+}
+
+str PortController::moveUpStart(int speed)
+{
+    setSlowSpeed(speed);
+    sendCommandToPort(str("MTU\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("UP"));
+}
+
+str PortController::moveDownStart(int speed)
+{
+    setSlowSpeed(speed);
+    sendCommandToPort(str("MTD\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("DOWN"));
+}
+
+str PortController::moveYStop()
+{
+    sendCommandToPort(str("MTSY\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("STOP_Y"));
+}
+
+str PortController::setFrameSizeX(int value)
+{
+    sendCommandToPort(str("MTSFX=") + str::number(value) + str("\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("SFX OK"));
+}
+
+str PortController::setFrameSizeY(int value)
+{
+    sendCommandToPort(str("MTSFY=") + str::number(value) + str("\r"));
+
+    return str("Command MoveFrameRight was " + answerStatus("SFY OK"));
 }
 
 
