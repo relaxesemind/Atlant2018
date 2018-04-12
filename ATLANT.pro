@@ -45,13 +45,15 @@ SOURCES += \
         mainwindow.cpp \
     cameracontroller.cpp \
     core.cpp \
-    portcontroller.cpp
+    portcontroller.cpp \
+    autofocusmath.cpp
 
 HEADERS += \
         mainwindow.h \
     cameracontroller.h \
     core.h \
-    portcontroller.h
+    portcontroller.h \
+    autofocusmath.h
 
 FORMS += \
         mainwindow.ui

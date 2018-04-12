@@ -47,10 +47,19 @@ private slots:
 
     void printPortFeedBack(const QString& message);
 
+    void on_spinBox_valueChanged(int arg1);
+
+    void on_Button_DownCamera_clicked();
+
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     Core core;
     void msgToLog(const QString&);
+    bool buttonMoveIsPressed;
+    int steps;
+    int steps_up_down;
 };
 
 #endif // MAINWINDOW_H

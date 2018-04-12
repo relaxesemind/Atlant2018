@@ -4,6 +4,7 @@
 
 #include "portcontroller.h"
 #include "cameracontroller.h"
+#include "autofocusmath.h"
 
 #include <QObject>
 #include <memory>
@@ -15,9 +16,12 @@
 #include <QGraphicsSceneWheelEvent>
 #include <QPixmap>
 #include <QImage>
+#include <functional>
 #include <QDate>
 #include <QTime>
 #include <QFileDialog>
+#include <QtConcurrent/QtConcurrent>
+#include <QFuture>
 
 bool extern portisWorking;
 
@@ -51,6 +55,8 @@ public slots:
     void disconnectPort();
     QString moveToRight(int steps);
     QString moveToLeft(int steps);
+    QString moveToForward(int steps);
+    QString moveToBackward(int steps);
     QString moveToUp(int steps);
     QString moveToDown(int steps);
     QString checkPortStatus();
@@ -58,6 +64,7 @@ public slots:
     void stopCameraCapture();
     bool printScreen();
     void updateVideoFrame(const QImage&);
+    void startAutoFucus();
 
 private:
 
@@ -66,6 +73,7 @@ private:
     std::unique_ptr<PortController> COM1port;
     CamStreamTask* camPtr;
     std::unique_ptr<QImage> lastFrame;
+    QThread* focusWorkThread;
 };
 
 

@@ -4,11 +4,14 @@ bool portisWorking = false;
 
 Core::Core(QObject *parent) : QObject(parent)
 {
-
+    focusWorkThread = new QThread();
+    AutoFocusMath::getInstance().moveToThread(focusWorkThread);
 }
 
 Core::~Core()
 {
+    focusWorkThread->quit();
+    focusWorkThread->deleteLater();
 
     if (camPtr)
     {
@@ -66,7 +69,7 @@ QString Core::moveToLeft(int steps)
     }
 }
 
-QString Core::moveToUp(int steps)
+QString Core::moveToForward(int steps)
 {
     if (COM1port and COM1port->isWritable())
     {
@@ -77,9 +80,37 @@ QString Core::moveToUp(int steps)
     }
 }
 
+QString Core::moveToBackward(int steps)
+{
+    if (COM1port and COM1port->isWritable())
+    {
+         return COM1port->moveYBy(-steps);
+    }else
+    {
+         return QString("port error");
+    }
+}
+
+QString Core::moveToUp(int steps)
+{
+    if (COM1port and COM1port->isWritable())
+    {
+        return COM1port->moveZBy(steps);
+    }else
+    {
+        return QString("port error");
+    }
+}
+
 QString Core::moveToDown(int steps)
 {
-
+    if (COM1port and COM1port->isWritable())
+    {
+        return COM1port->moveZBy(-steps);
+    }else
+    {
+        return QString("port error");
+    }
 }
 
 QString Core::checkPortStatus()
@@ -138,6 +169,15 @@ void Core::updateVideoFrame(const QImage& frame_img)
            (QPixmap::fromImage(frame_img));
    scene.addItem(framePointer.get());
 }
+
+void Core::startAutoFucus()
+{
+   // AutoFocusMath::getInstance().pushNextFrameImage(*lastFrame.get());
+
+}
+
+
+
 
 void VScene::wheelEvent(QGraphicsSceneWheelEvent * e)
 {

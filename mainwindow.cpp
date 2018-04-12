@@ -16,6 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&core.scene,&VScene::zoomOut,
             this,&MainWindow::on_actionZoomOut_triggered);
+    steps = ui->spinBox->value();
+    steps_up_down = ui->spinBox_2->value();
 }
 
 MainWindow::~MainWindow()
@@ -25,8 +27,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_Button_RightCamera_clicked()
 {
-    int steps = ui->spinBox->value();
-    msgToLog(core.moveToRight(steps));
+    msgToLog(
+             core.moveToRight(steps)
+                );
 }
 
 void MainWindow::on_action_triggered()//connection port
@@ -81,17 +84,34 @@ void MainWindow::on_action_save_triggered()
 
 void MainWindow::on_Button_LeftCamera_clicked()
 {
-    int steps = ui->spinBox->value();
     msgToLog(core.moveToLeft(steps));
 }
 
 void MainWindow::on_Button_UpCamera_clicked()
 {
-    int steps = ui->spinBox->value();
-    msgToLog(core.moveToUp(steps));
+    msgToLog(core.moveToForward(steps));
 }
 
 void MainWindow::printPortFeedBack(const QString &message)
 {
     msgToLog(message);
+}
+
+
+void MainWindow::on_spinBox_valueChanged(int arg1)
+{
+    steps = arg1;
+}
+
+
+void MainWindow::on_Button_DownCamera_clicked()
+{
+    msgToLog(
+             core.moveToBackward(steps)
+                );
+}
+
+void MainWindow::on_pushButton_clicked()//autoFucus button
+{
+
 }
