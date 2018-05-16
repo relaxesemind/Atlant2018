@@ -1,23 +1,33 @@
 #include "core.h"
+#include "cellsselecter.h"
+#include <QMessageBox>
+
 
 bool portisWorking = false;
 
 Core::Core(QObject *parent) : QObject(parent)
 {
-    focusWorkThread = new QThread();
-    AutoFocusMath::getInstance().moveToThread(focusWorkThread);
+    m_timer.setSingleShot(true);
+  //  AutoFocusProcessManager::sharedManager().moveToThread(focusWorkThread);
+  //  CellsSelecter::sharedSelecter().moveToThread(selecterThread);
+    AutoFocusProcessManager::sharedManager().setCore(this);
+//    connect(&AutoFocusProcessManager::sharedManager(),&AutoFocusProcessManager::focusingValueWasChanged,
+//            this,&Core::updateFocusQualityBar,Qt::DirectConnection);
+   // focusWorkThread->start(QThread::NormalPriority);
 }
 
 Core::~Core()
 {
-    focusWorkThread->quit();
-    focusWorkThread->deleteLater();
-
     if (camPtr)
     {
          camPtr->onStop();
     }
-    m_pool.waitForDone();
+    if (runFocus)
+    {
+        runFocus->onStop();
+    }
+    cam_pool.waitForDone();
+    autoFocus_threadPool.waitForDone();
 
 }
 
@@ -141,9 +151,9 @@ QString Core::checkPortStatus()
 void Core::makeCameraCapture()
 {
     camPtr = new CamStreamTask;
-    m_pool.start(camPtr);
-    connect(camPtr,&CamStreamTask::frameAvailable,
-            this,  &Core::updateVideoFrame);
+    cam_pool.start(camPtr);
+     connect(camPtr,&CamStreamTask::frameAvailable,
+                this,  &Core::updateVideoFrame);
 }
 
 void Core::stopCameraCapture()
@@ -170,16 +180,56 @@ void Core::updateVideoFrame(const QImage& frame_img)
    scene.addItem(framePointer.get());
 }
 
-void Core::startAutoFucus()
+
+void Core::infiniteAutoFocusProcess()
 {
-   // AutoFocusMath::getInstance().pushNextFrameImage(*lastFrame.get());
+    if (autoFocusSemaphore == false) {
+        runFocus->onStop();
+        return;
+    }
+    runFocus = new AutoFocusRunnable;
+    autoFocus_threadPool.start(runFocus);
+    connect(runFocus,&AutoFocusRunnable::newValueFocus,
+            this,&Core::updateFocusQualityBar);
 
 }
 
+void Core::setAutoFocusSemaphore(bool startOrStop)
+{
+    if (!camPtr)
+    {
+        return;
+    }
+    autoFocusSemaphore = startOrStop;
+    infiniteAutoFocusProcess();
+}
 
+
+bool Core::appIsReadyForTraverseWalk()
+{
+    return camPtr and COM1port and COM1port->isConnected() and COM1port->isWritable() and COM1port->isReadable();
+}
+
+void Core::traverseWalkOnImage() {
+    if (appIsReadyForTraverseWalk() == false) {
+        return;
+    }
+
+
+    CellsSelecter::sharedSelecter().select(*lastFrame);
+}
 
 
 void VScene::wheelEvent(QGraphicsSceneWheelEvent * e)
 {
 
 }
+
+
+
+
+
+
+
+
+

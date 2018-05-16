@@ -4,7 +4,7 @@
 
 #include "portcontroller.h"
 #include "cameracontroller.h"
-#include "autofocusmath.h"
+#include "autofocusprocessmanager.h"
 
 #include <QObject>
 #include <memory>
@@ -19,12 +19,14 @@
 #include <functional>
 #include <QDate>
 #include <QTime>
+#include <QTimer>
 #include <QFileDialog>
 #include <QtConcurrent/QtConcurrent>
 #include <QFuture>
 
 bool extern portisWorking;
 
+class AutoFocusRunnable;
 
 class VScene : public QGraphicsScene
 {
@@ -46,11 +48,18 @@ public:
     ~Core();
 
      VScene scene;
+     std::unique_ptr<QImage> lastFrame;
 signals:
 
     void feedBackFromPort(const QString& message);
+    void updateFocusQualityBar(int value);
+    void newFrameIsReady(const QImage& frame);
+
 
 public slots:
+
+    void traverseWalkOnImage();
+
     void makeConnetionWithPort();
     void disconnectPort();
     QString moveToRight(int steps);
@@ -64,16 +73,25 @@ public slots:
     void stopCameraCapture();
     bool printScreen();
     void updateVideoFrame(const QImage&);
-    void startAutoFucus();
+    void infiniteAutoFocusProcess();
+    void setAutoFocusSemaphore(bool startOrStop);
 
 private:
 
     pItem framePointer;
-    QThreadPool m_pool;
-    std::unique_ptr<PortController> COM1port;
+    bool autoFocusSemaphore;
+    QTimer m_timer;
+
+    QThreadPool cam_pool;
+    QThreadPool autoFocus_threadPool;
+
+    AutoFocusRunnable *runFocus;
     CamStreamTask* camPtr;
-    std::unique_ptr<QImage> lastFrame;
-    QThread* focusWorkThread;
+
+    std::unique_ptr<PortController> COM1port;
+
+
+    bool appIsReadyForTraverseWalk();
 };
 
 

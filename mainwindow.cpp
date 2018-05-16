@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "autofocusprocessmanager.h"
+#include <QMessageBox>
 
 quint32 static logStrPos = 0;
 constexpr qreal zoomMultiple_inc = 1.05;
@@ -11,11 +13,21 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->graphicsView->setScene(&core.scene);
+   // ui->gridLayout->addWidget(mgraphics);
+
+    AutoFocusProcessManager::sharedManager().setCore(&core);
+
     connect(&core.scene,&VScene::zoomIn,
             this,&MainWindow::on_actionZoomIn_triggered);
 
     connect(&core.scene,&VScene::zoomOut,
             this,&MainWindow::on_actionZoomOut_triggered);
+
+    connect(&core,&Core::updateFocusQualityBar,this,&MainWindow::updateUIfocusBar);
+
+    connect(this,&MainWindow::startWalking,&core,&Core::traverseWalkOnImage);
+
+
     steps = ui->spinBox->value();
     steps_up_down = ui->spinBox_2->value();
 }
@@ -27,9 +39,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_Button_RightCamera_clicked()
 {
-    msgToLog(
-             core.moveToRight(steps)
-                );
+    msgToLog(core.moveToRight(steps));
 }
 
 void MainWindow::on_action_triggered()//connection port
@@ -70,6 +80,7 @@ void MainWindow::on_actionStopCamera_triggered()
 void MainWindow::on_actionZoomIn_triggered()
 {
     ui->graphicsView->scale(zoomMultiple_inc,zoomMultiple_inc);
+ //   mgraphics->scale(zoomMultiple_inc,zoomMultiple_inc);
 }
 
 void MainWindow::on_actionZoomOut_triggered()
@@ -106,12 +117,75 @@ void MainWindow::on_spinBox_valueChanged(int arg1)
 
 void MainWindow::on_Button_DownCamera_clicked()
 {
-    msgToLog(
-             core.moveToBackward(steps)
-                );
+    msgToLog(core.moveToBackward(steps));
 }
 
 void MainWindow::on_pushButton_clicked()//autoFucus button
 {
-
+    core.setAutoFocusSemaphore(true);
+    msgToLog("autofocus is running");
 }
+
+void MainWindow::updateUIfocusBar(int value)
+{
+    int maxValue = static_cast<int> (AutoFocusMath::getInstance().currentMaxFocusValue);
+    qDebug() << "maxValue == " << maxValue;
+    ui->focusQuality->setValue(ui->focusQuality->maximum()*value/maxValue);
+}
+
+
+void MainWindow::on_pushButton_2_clicked()// stop auto focus
+{
+    core.setAutoFocusSemaphore(false);
+    msgToLog("autofocus is stopped");
+}
+
+void MainWindow::on_commandLinkButton_2_clicked()
+{
+    msgToLog(core.moveToUp(ui->spinBox_2->value()));
+}
+
+void MainWindow::on_commandLinkButton_clicked()
+{
+    msgToLog(core.moveToDown(ui->spinBox_2->value()));
+}
+
+void MainWindow::on_action_4_triggered()//show log
+{
+    ui->dockWidget->show();
+}
+
+void MainWindow::on_pushButton_3_clicked()//main algo
+{
+    QMessageBox::StandardButton reply;
+
+    reply = QMessageBox::question(this, "Start walking", "Are you sure that the objects are focused?",
+        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+    if (reply == QMessageBox::Yes) {
+        qDebug() << "Yes was clicked";
+        emit startWalking();
+    }
+    if (reply == QMessageBox::No)
+    {
+        // toDo
+    }
+    if(reply == QMessageBox::Cancel)
+    {
+        //toDo
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

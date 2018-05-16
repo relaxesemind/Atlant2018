@@ -2,15 +2,22 @@
 
 
 
-void AutoFocusMath::pushNextFrameImage(const QImage &frame)
+qreal AutoFocusMath::pushNextFrameImage(const QImage &frame)
 {
     qreal newValue = valueOfDefocusingCurve(frame);
-    currentMaxFocusValue = std::max(currentMaxFocusValue, newValue);
+    currentMaxFocusValue = std::max(currentMaxFocusValue,newValue);
+    return  newValue;
 }
 
 qreal AutoFocusMath::getCurrentMaxFocusValue() const
 {
     return currentMaxFocusValue;
+}
+
+void AutoFocusMath::calculateFocusValueWithFrame(const QImage &frame,
+                                                 void (*invoke)(qreal focusValue))
+{
+    invoke(valueOfDefocusingCurve(frame));
 }
 
 qreal AutoFocusMath::defocusingCurveLaplace(const QImage& currentFrameImage)
@@ -37,7 +44,11 @@ qreal AutoFocusMath::defocusingCurveStandardDeviation(const QImage& currentFrame
         {
             averageBrightness += brignessInPos(i,j,currentFrameImage);
         }
-    averageBrightness /= (currentFrameImage.height() * currentFrameImage.width());
+
+    qint64 sizeOfImage = currentFrameImage.height() * currentFrameImage.width();
+    if (sizeOfImage == 0) sizeOfImage = 1;
+
+    averageBrightness /= sizeOfImage;
 
     for (qint32 i = 0; i < currentFrameImage.height(); ++i)
         for (qint32 j = 0; j < currentFrameImage.width(); ++j)

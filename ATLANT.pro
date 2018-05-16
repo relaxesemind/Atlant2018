@@ -46,14 +46,19 @@ SOURCES += \
     cameracontroller.cpp \
     core.cpp \
     portcontroller.cpp \
-    autofocusmath.cpp
+    autofocusprocessmanager.cpp \
+    cellsselecter.cpp \
+    cameramovewithfocus.cpp
 
 HEADERS += \
         mainwindow.h \
     cameracontroller.h \
     core.h \
     portcontroller.h \
-    autofocusmath.h
+    autofocusprocessmanager.h \
+    cellsselecter.h \
+    single_area.h \
+    cameramovewithfocus.h
 
 FORMS += \
         mainwindow.ui

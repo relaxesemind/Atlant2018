@@ -32,13 +32,6 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="1">
-       <widget class="QGraphicsView" name="graphicsView">
-        <property name="styleSheet">
-         <string notr="true">background : rgb(38, 38, 38)</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QTabWidget" name="tabWidget">
         <property name="sizePolicy">
@@ -213,7 +206,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>440</y>
+            <y>260</y>
             <width>281</width>
             <height>21</height>
            </rect>
@@ -263,10 +256,101 @@
            <string>Чисто шагов за одно нажатие</string>
           </property>
          </widget>
+         <widget class="QPushButton" name="pushButton_3">
+          <property name="geometry">
+           <rect>
+            <x>70</x>
+            <y>370</y>
+            <width>161</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Старт прохода</string>
+          </property>
+          <property name="autoRepeatDelay">
+           <number>300</number>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>290</y>
+            <width>271</width>
+            <height>52</height>
+           </rect>
+          </property>
+          <layout class="QFormLayout" name="formLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Количество клеток</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="spinBox_3">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="prefix">
+              <string/>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>1000000000</number>
+             </property>
+             <property name="singleStep">
+              <number>1</number>
+             </property>
+             <property name="value">
+              <number>100</number>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="lineWidth">
+              <number>1</number>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Минимальная площадь клетки&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="spinBox_4">
+             <property name="suffix">
+              <string/>
+             </property>
+             <property name="prefix">
+              <string/>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>1000000000</number>
+             </property>
+             <property name="singleStep">
+              <number>25</number>
+             </property>
+             <property name="value">
+              <number>200</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <zorder>layoutWidget</zorder>
          <zorder>line</zorder>
          <zorder>layoutWidget</zorder>
          <zorder>spinBox</zorder>
          <zorder>label_5</zorder>
+         <zorder>pushButton_3</zorder>
         </widget>
         <widget class="QWidget" name="tab">
          <attribute name="title">
@@ -278,7 +362,7 @@
             <x>20</x>
             <y>190</y>
             <width>261</width>
-            <height>181</height>
+            <height>231</height>
            </rect>
           </property>
           <property name="title">
@@ -337,6 +421,19 @@
            </property>
            <property name="text">
             <string>Максимальное значение = </string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="pushButton_2">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>160</y>
+             <width>241</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Остановить автофокусировку</string>
            </property>
           </widget>
          </widget>
@@ -408,13 +505,16 @@
            </rect>
           </property>
           <property name="minimum">
-           <number>2</number>
+           <number>15</number>
           </property>
           <property name="maximum">
-           <number>250</number>
+           <number>1000</number>
+          </property>
+          <property name="singleStep">
+           <number>25</number>
           </property>
           <property name="value">
-           <number>74</number>
+           <number>75</number>
           </property>
          </widget>
          <widget class="QLabel" name="label_6">
@@ -431,6 +531,13 @@
           </property>
          </widget>
         </widget>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QGraphicsView" name="graphicsView">
+        <property name="styleSheet">
+         <string notr="true">background : rgb(38, 38, 38)</string>
+        </property>
        </widget>
       </item>
      </layout>
@@ -464,8 +571,15 @@
     <addaction name="action_2"/>
     <addaction name="action_3"/>
    </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>Дополнительно</string>
+    </property>
+    <addaction name="action_4"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menu_3"/>
+   <addaction name="menu_4"/>
    <addaction name="menu_2"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -587,6 +701,11 @@ font: 10pt &quot;Consolas&quot;;</string>
    </property>
    <property name="text">
     <string>Сохранить изображение</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>Показать лог</string>
    </property>
   </action>
  </widget>

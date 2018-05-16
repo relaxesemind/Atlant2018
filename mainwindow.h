@@ -53,6 +53,22 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void updateUIfocusBar(int value);
+
+    void on_pushButton_2_clicked();
+
+    void on_commandLinkButton_2_clicked();
+
+    void on_commandLinkButton_clicked();
+
+    void on_action_4_triggered();
+
+    void on_pushButton_3_clicked();
+
+signals:
+    void startWalking();
+    void stopWalking();
+
 private:
     Ui::MainWindow *ui;
     Core core;

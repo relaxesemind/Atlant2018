@@ -19,9 +19,9 @@ public:
         return sharedInstance;
     }
 public slots:
-
-    void pushNextFrameImage(const QImage& frame);
+    qreal pushNextFrameImage(const QImage& frame);
     qreal getCurrentMaxFocusValue() const;
+    void calculateFocusValueWithFrame(const QImage& frame, void (*invoke)(qreal focusValue));
 
 signals:
     void readyToGetNewFrame();
