@@ -5,6 +5,7 @@
 #include "portcontroller.h"
 #include "cameracontroller.h"
 #include "autofocusprocessmanager.h"
+#include "cameramovewithfocus.h"
 
 #include <QObject>
 #include <memory>
@@ -27,6 +28,7 @@
 bool extern portisWorking;
 
 class AutoFocusRunnable;
+class CameraMoveWithFocus;
 
 class VScene : public QGraphicsScene
 {
@@ -76,17 +78,20 @@ public slots:
     void infiniteAutoFocusProcess();
     void setAutoFocusSemaphore(bool startOrStop);
 
+    void autoFocusEnds(int z);
+
 private:
 
     pItem framePointer;
     bool autoFocusSemaphore;
     QTimer m_timer;
 
-    QThreadPool cam_pool;
-    QThreadPool autoFocus_threadPool;
+    QThreadPool threadPool;
 
-    AutoFocusRunnable *runFocus;
+
     CamStreamTask* camPtr;
+    CameraMoveWithFocus *cameraMover;
+    AutoFocusRunnable *autoFocusProcess;
 
     std::unique_ptr<PortController> COM1port;
 

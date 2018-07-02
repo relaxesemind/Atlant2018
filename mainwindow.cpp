@@ -129,8 +129,8 @@ void MainWindow::on_pushButton_clicked()//autoFucus button
 void MainWindow::updateUIfocusBar(int value)
 {
     int maxValue = static_cast<int> (AutoFocusMath::getInstance().currentMaxFocusValue);
-    qDebug() << "maxValue == " << maxValue;
-    ui->focusQuality->setValue(ui->focusQuality->maximum()*value/maxValue);
+  //  qDebug() << "maxValue == " << maxValue;
+    ui->focusQuality->setValue(ui->focusQuality->maximum()*value / maxValue);
 }
 
 

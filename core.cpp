@@ -7,13 +7,11 @@ bool portisWorking = false;
 
 Core::Core(QObject *parent) : QObject(parent)
 {
-    m_timer.setSingleShot(true);
-  //  AutoFocusProcessManager::sharedManager().moveToThread(focusWorkThread);
-  //  CellsSelecter::sharedSelecter().moveToThread(selecterThread);
+    m_timer.setSingleShot(true);\
     AutoFocusProcessManager::sharedManager().setCore(this);
-//    connect(&AutoFocusProcessManager::sharedManager(),&AutoFocusProcessManager::focusingValueWasChanged,
-//            this,&Core::updateFocusQualityBar,Qt::DirectConnection);
-   // focusWorkThread->start(QThread::NormalPriority);
+    camPtr = nullptr;
+    cameraMover = nullptr;
+    autoFocusProcess = nullptr;
 }
 
 Core::~Core()
@@ -22,13 +20,16 @@ Core::~Core()
     {
          camPtr->onStop();
     }
-    if (runFocus)
+    if (cameraMover)
     {
-        runFocus->onStop();
+        cameraMover->onStop();
     }
-    cam_pool.waitForDone();
-    autoFocus_threadPool.waitForDone();
+    if (autoFocusProcess)
+    {
+        autoFocusProcess->onStop();
+    }
 
+    threadPool.waitForDone();
 }
 
 void Core::makeConnetionWithPort()
@@ -103,6 +104,7 @@ QString Core::moveToBackward(int steps)
 
 QString Core::moveToUp(int steps)
 {
+qDebug () << "steps = " << steps;
     if (COM1port and COM1port->isWritable())
     {
         return COM1port->moveZBy(steps);
@@ -114,6 +116,8 @@ QString Core::moveToUp(int steps)
 
 QString Core::moveToDown(int steps)
 {
+    qDebug () << "steps = " << steps;
+
     if (COM1port and COM1port->isWritable())
     {
         return COM1port->moveZBy(-steps);
@@ -151,7 +155,7 @@ QString Core::checkPortStatus()
 void Core::makeCameraCapture()
 {
     camPtr = new CamStreamTask;
-    cam_pool.start(camPtr);
+    threadPool.start(camPtr);
      connect(camPtr,&CamStreamTask::frameAvailable,
                 this,  &Core::updateVideoFrame);
 }
@@ -180,18 +184,30 @@ void Core::updateVideoFrame(const QImage& frame_img)
    scene.addItem(framePointer.get());
 }
 
-
 void Core::infiniteAutoFocusProcess()
 {
     if (autoFocusSemaphore == false) {
-        runFocus->onStop();
+        if (cameraMover) {
+            cameraMover->onStop();
+        }
+        if (autoFocusProcess) {
+            autoFocusProcess->onStop();
+        }
         return;
     }
-    runFocus = new AutoFocusRunnable;
-    autoFocus_threadPool.start(runFocus);
-    connect(runFocus,&AutoFocusRunnable::newValueFocus,
-            this,&Core::updateFocusQualityBar);
 
+    autoFocusProcess = new AutoFocusRunnable();
+    cameraMover = new CameraMoveWithFocus(this,this);
+
+    threadPool.start(autoFocusProcess);
+    threadPool.start(cameraMover);
+
+ //   connect(cameraMover, &CameraMoveWithFocus::needToMoveUp,this, &Core::moveToUp);
+//    connect(cameraMover, &CameraMoveWithFocus::needToMoveDown,this, &Core::moveToDown);
+    connect(autoFocusProcess,&AutoFocusRunnable::newValueFocus,cameraMover,&CameraMoveWithFocus::getValueFromAutoFocus);
+    connect(autoFocusProcess,&AutoFocusRunnable::newValueFocus,
+                this,&Core::updateFocusQualityBar);
+    connect(cameraMover,&CameraMoveWithFocus::complitionSignalWithZcoordinate,this,&Core::autoFocusEnds);
 }
 
 void Core::setAutoFocusSemaphore(bool startOrStop)
@@ -202,6 +218,11 @@ void Core::setAutoFocusSemaphore(bool startOrStop)
     }
     autoFocusSemaphore = startOrStop;
     infiniteAutoFocusProcess();
+}
+
+void Core::autoFocusEnds(int z)
+{
+    autoFocusProcess->onStop();
 }
 
 

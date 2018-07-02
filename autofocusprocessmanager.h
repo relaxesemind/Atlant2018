@@ -72,6 +72,7 @@ signals:
 public slots:
     int start();
     void stop();
+
 protected:
     Core *corethis;
 private:
@@ -87,6 +88,7 @@ public:
 public slots:
     void onStop();
     void onStart();
+    bool isActive();
 
 signals:
     void newValueFocus(int value);

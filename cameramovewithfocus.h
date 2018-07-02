@@ -4,9 +4,13 @@
 #include <QObject>
 #include <QRunnable>
 #include <QThreadPool>
+#include <map>
+#include "core.h"
 
 #include "portcontroller.h"
 #include "autofocusprocessmanager.h"
+
+class Core;
 
 /**
  * Общий алгоритм движения камеры при автофокусировке:
@@ -20,31 +24,47 @@
  * 2.2.3) Если оно начало увеличиваться то продолжаемся движение до уменьшения - ТОЧКА
  *
  **/
-
+class AutoFocusRunnable;
 class CameraMoveWithFocus : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    explicit CameraMoveWithFocus(QObject *parent = nullptr);
+    explicit CameraMoveWithFocus(Core *core = nullptr, QObject *parent = nullptr);
     ~CameraMoveWithFocus();
+
 public slots:
     void onStop();
     void onStart();
     void getValueFromAutoFocus(int value);
+    void needToMoveUp(int steps);
+    void needToMoveDown(int steps);
 
 signals:
     void complitionSignalWithZcoordinate( int z );
-    void needToMoveUp(int steps);
-    void needToMoveDown(int steps);
+
 ///Сообщаем Core о том что надо двинутся вверх или вниз. в run обрабатываем это
 protected:
     void run();
 
 private:
     bool m_stopped;
-    QThreadPool autoFocus_threadPool;
-    AutoFocusRunnable *runFocus;
-    int currentValueFocus;
+    int newestFocusValue;
+    int lastFocusValue;
+    int maxValueFocus;
+    bool direction; // true down, false up
+    int maxYposition;
+    int currentPosition;
+    int repetition;
+
+    int stepsNumberIteration;
+    int confidenceInterval;
+
+    Core *corethis;
+
+    std::map<int, int> values;
+
+    bool makeDecision();
+    void moveCamera();
 };
 
 #endif // CAMERAMOVEWITHFOCUS_H

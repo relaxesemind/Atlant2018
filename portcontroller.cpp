@@ -324,7 +324,7 @@ bool PortController::waitForAnswer(const str& ans)
         return false;
 
     QEventLoop loop;
-    connect(this,&PortController::outPort,&loop,&QEventLoop::quit);
+    connect(this,&PortController::outPort,&loop,&QEventLoop::quit, Qt::AutoConnection);
     QTimer::singleShot(delayMAX_for_answer,&loop,&QEventLoop::quit);
     loop.exec();
 

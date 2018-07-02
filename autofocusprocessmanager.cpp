@@ -23,7 +23,6 @@ void AutoFocusProcessManager::stop()
 
 }
 
-
 qreal AutoFocusMath::getCurrentMaxFocusValue() const
 {
     return currentMaxFocusValue;
@@ -48,8 +47,8 @@ qreal AutoFocusMath::defocusingCurveStandardDeviation(const QImage& currentFrame
     qreal Gk = 0;
     qint64 averageBrightness = 0;
 
-    qDebug() << currentFrameImage;
-
+ //   qDebug() << currentFrameImage;
+//
 //    for(qint32 y = 0; y < img.height(); ++y)
 //      for(qint32 x = 0; x < img.width(); ++x) {
 
@@ -83,9 +82,9 @@ qreal AutoFocusMath::valueOfDefocusingCurve(const QImage& currentFrameImage)
                             + defocusingCurveLaplace(currentFrameImage));
 
     newValue /= 1000000;
-     qDebug () << "newValue = " << newValue;
+     //qDebug () << "newValue = " << newValue;
     currentMaxFocusValue = std::max(currentMaxFocusValue,newValue);
-    qDebug () << currentMaxFocusValue;
+ //   qDebug () << currentMaxFocusValue;
     emit readyToGetNewFrame();
     return  newValue;
 }
@@ -110,6 +109,12 @@ void AutoFocusRunnable::onStart()
 {
     m_stopped = false;
 }
+
+bool AutoFocusRunnable::isActive()
+{
+    return !m_stopped;
+}
+
 
 /**
  * Общий алгоритм движения камеры при автофокусировке:
