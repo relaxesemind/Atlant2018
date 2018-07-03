@@ -1,8 +1,7 @@
 #include "cameramovewithfocus.h"
 
-CameraMoveWithFocus::CameraMoveWithFocus(Core *core, QObject *parent) : QObject(parent)
+CameraMoveWithFocus::CameraMoveWithFocus(QObject *parent) : QObject(parent)
 {
-    corethis = core;
     m_stopped = false;
     maxYposition = 0;
     direction = true;
@@ -34,16 +33,6 @@ void CameraMoveWithFocus::getValueFromAutoFocus(int value)
     newestFocusValue = value;
 }
 
-void CameraMoveWithFocus::needToMoveUp(int steps)
-{
-    corethis->moveToUp(steps);
-}
-
-void CameraMoveWithFocus::needToMoveDown(int steps)
-{
-    corethis->moveToDown(steps);
-}
-
 /**
  * Общий алгоритм движения камеры при автофокусировке:
  * + 1) посчитать значение в текущем положении (усредненное 20 кадров)
@@ -64,7 +53,7 @@ void CameraMoveWithFocus::run()
             break;
         }
     qDebug () << "0000";
-    this->thread()->sleep(1);
+    this->thread()->wait(800);
     qDebug () << "11111";
      if (!makeDecision()) {
          qDebug () << "22222";
@@ -93,13 +82,11 @@ bool CameraMoveWithFocus::makeDecision()
 void CameraMoveWithFocus::moveCamera()
 {
     if (direction) {
-        qDebug () <<"Down";
-        needToMoveDown(75);
-        currentPosition -= 75;
+        emit needToMoveDown(stepsNumberIteration);
+        currentPosition -= stepsNumberIteration;
      } else {
-        qDebug () <<"UP";
-        needToMoveUp(75);
-        currentPosition += 75;
+        emit needToMoveUp(stepsNumberIteration);
+        currentPosition += stepsNumberIteration;
     }
 }
 

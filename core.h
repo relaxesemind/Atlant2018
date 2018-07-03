@@ -88,7 +88,6 @@ private:
 
     QThreadPool threadPool;
 
-
     CamStreamTask* camPtr;
     CameraMoveWithFocus *cameraMover;
     AutoFocusRunnable *autoFocusProcess;

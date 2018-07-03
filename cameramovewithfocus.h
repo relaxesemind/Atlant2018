@@ -5,12 +5,9 @@
 #include <QRunnable>
 #include <QThreadPool>
 #include <map>
-#include "core.h"
 
 #include "portcontroller.h"
 #include "autofocusprocessmanager.h"
-
-class Core;
 
 /**
  * Общий алгоритм движения камеры при автофокусировке:
@@ -29,19 +26,18 @@ class CameraMoveWithFocus : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    explicit CameraMoveWithFocus(Core *core = nullptr, QObject *parent = nullptr);
+    explicit CameraMoveWithFocus(QObject *parent = nullptr);
     ~CameraMoveWithFocus();
 
 public slots:
     void onStop();
     void onStart();
     void getValueFromAutoFocus(int value);
-    void needToMoveUp(int steps);
-    void needToMoveDown(int steps);
 
 signals:
     void complitionSignalWithZcoordinate( int z );
-
+    void needToMoveUp(int steps);
+    void needToMoveDown(int steps);
 ///Сообщаем Core о том что надо двинутся вверх или вниз. в run обрабатываем это
 protected:
     void run();
@@ -58,8 +54,6 @@ private:
 
     int stepsNumberIteration;
     int confidenceInterval;
-
-    Core *corethis;
 
     std::map<int, int> values;
 

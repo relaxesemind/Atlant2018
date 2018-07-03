@@ -104,7 +104,6 @@ QString Core::moveToBackward(int steps)
 
 QString Core::moveToUp(int steps)
 {
-qDebug () << "steps = " << steps;
     if (COM1port and COM1port->isWritable())
     {
         return COM1port->moveZBy(steps);
@@ -116,8 +115,6 @@ qDebug () << "steps = " << steps;
 
 QString Core::moveToDown(int steps)
 {
-    qDebug () << "steps = " << steps;
-
     if (COM1port and COM1port->isWritable())
     {
         return COM1port->moveZBy(-steps);
@@ -197,13 +194,13 @@ void Core::infiniteAutoFocusProcess()
     }
 
     autoFocusProcess = new AutoFocusRunnable();
-    cameraMover = new CameraMoveWithFocus(this,this);
+    cameraMover = new CameraMoveWithFocus();
 
     threadPool.start(autoFocusProcess);
     threadPool.start(cameraMover);
 
- //   connect(cameraMover, &CameraMoveWithFocus::needToMoveUp,this, &Core::moveToUp);
-//    connect(cameraMover, &CameraMoveWithFocus::needToMoveDown,this, &Core::moveToDown);
+    connect(cameraMover, &CameraMoveWithFocus::needToMoveUp,this,&Core::moveToUp);
+    connect(cameraMover, &CameraMoveWithFocus::needToMoveDown,this,&Core::moveToDown);
     connect(autoFocusProcess,&AutoFocusRunnable::newValueFocus,cameraMover,&CameraMoveWithFocus::getValueFromAutoFocus);
     connect(autoFocusProcess,&AutoFocusRunnable::newValueFocus,
                 this,&Core::updateFocusQualityBar);
